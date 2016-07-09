@@ -20,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/bionode-hack/bionode-monarch/issues"
   },
-  "homepage": "https://github.com/bionode-hack/bionode-monarch#readme"
+  "homepage": "https://github.com/bionode-hack/bionode-monarch#readme",
+  "dependencies": {
+    "request": "^2.73.0"
+  }
 }
