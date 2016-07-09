@@ -1,0 +1,24 @@
+{
+  "name": "bionode-monarch",
+  "version": "1.0.0",
+  "description": "Node.js wrapper for the Monarch REST API",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bionode-hack/bionode-monarch.git"
+  },
+  "keywords": [
+    "bionode",
+    "bioinformatics",
+    "monarch"
+  ],
+  "author": "",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/bionode-hack/bionode-monarch/issues"
+  },
+  "homepage": "https://github.com/bionode-hack/bionode-monarch#readme"
+}
