@@ -20,6 +20,7 @@ var diseaseFilterFn = function (object, encoding, next) {
   next();
 };
 
+
 var diseaseFilter = through.obj(diseaseFilterFn);
 
 var idToSearchFn = function (object, encoding, next) {
@@ -32,7 +33,7 @@ var idToSearchFn = function (object, encoding, next) {
 var idToSearch = through.obj(idToSearchFn);
 
 hh(
-  request(urlDiseaseListOmimList)
+    request(urlDiseaseListOmimList)
     .pipe(split())
   )
   .take(10)
