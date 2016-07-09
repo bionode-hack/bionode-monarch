@@ -3,24 +3,39 @@ var request = require('request');
 var JSONStream = require('JSONStream');
 var split = require('split2');
 var through = require('through2');
+var hh = require('highland');
 
-var urlDiseaseEndpoint = 'https://monarchinitiative.org/disease/OMIM:127750.json';
 var urlDiseaseListOmimList = 'https://raw.githubusercontent.com/monarch-initiative/disease-miner/master/omim-id-name.tbl';
 
-// var filter = function (object, encoding, next) {
-//   this.push(JSON.stringify(object)); // sends the object downstream
-//   next();
-// };
+var urlSolrBuilder = function (diseaseId) {
+  return 'https://solr.monarchinitiative.org/solr/golr/select?defType=edismax&qt=standard&indent=on&wt=json&rows=100000&start=0&fl=subject,subject_label,relation,relation_label,object,object_label,evidence,evidence_label,source,is_defined_by,qualifier&facet=true&facet.mincount=1&facet.sort=count&json.nl=arrarr&facet.limit=25&facet.method=enum&csv.encapsulator=&csv.separator=%09&csv.header=true&csv.mv.separator=%7C&fq=subject_closure:%22' + diseaseId + '%22&fq=object_category:%22phenotype%22&fq=subject_category:%22disease%22&facet.field=subject_taxon_closure_label&facet.field=object_taxon_closure_label&q=*:*';
+};
 
-// var myFilter = through.obj(filter);
+var diseaseFilterFn = function (object, encoding, next) {
+  var line = object.split('\t');
+  this.push(JSON.stringify({
+    id: line[0],
+    name: line[1]
+  })); // sends the object downstream
+  next();
+};
 
-{
-  id: DECIPHER:14
-  name: Prader-Willi Syndrome (Type 1)
-}
+var diseaseFilter = through.obj(diseaseFilterFn);
 
-request(urlString)
-  // .pipe(split())
-  // .pipe(JSONStream.parse())
-  // .pipe(myFilter)
+var idToSearchFn = function (object, encoding, next) {
+  request(urlSolrBuilder(object.id), (err, res, body) => {
+    this.push(body);
+    next();
+  });
+};
+
+var idToSearch = through.obj(idToSearchFn);
+
+hh(
+  request(urlDiseaseListOmimList)
+    .pipe(split())
+  )
+  .take(10)
+  .pipe(diseaseFilter)
+  .pipe(idToSearch)
   .pipe(process.stdout);
