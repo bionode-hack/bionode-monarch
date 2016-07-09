@@ -2,7 +2,7 @@
 var minimist = require('minimist')
 var JSONStream = require('JSONStream')
 var split = require('split2')
-var ncbi = require('./')
+var monarch = require('./')
 
 var minimistOptions = {
   alias: {
@@ -34,12 +34,14 @@ var command = argv._[0]
 var arg1 = argv._[1]
 var lastArg = argv._[argv._.length - 1]
 var wantsStdin = false
+
+// if argument is '-' read from stdin
 if (lastArg === '-') {
   wantsStdin = true
   argv._.pop()
 }
 
-if (command === 'link') {
+if (command === 'ids') {
   var arg2 = argv._[2]
   var arg3 = argv._[3]
 } else {
@@ -57,19 +59,18 @@ if (Object.keys(argv).length > 1) {
   }
 }
 
-var ncbiStream = Object.keys(options).length ? ncbi[command](options) : ncbi[command](arg1, arg2, arg3)
+var monarchStream = Object.keys(options).length ? monarch[command](options) : monarch[command](arg1, arg2, arg3)
 
-ncbiStream.pipe(JSONStream.stringify(false)).pipe(process.stdout)
+monarchStream.pipe(JSONStream.stringify(false)).pipe(process.stdout)
 
 if (wantsStdin) {
   process.stdin.setEncoding('utf8')
-
   process.stdin.pipe(split()).on('data', function (data) {
     if (data.trim() === '') { return }
-    ncbiStream.write(data.trim())
+    monarchStream.write(data.trim())
   })
   process.stdin.on('end', function () {
-    ncbiStream.end()
+    monarchStream.end()
   })
 }
 
