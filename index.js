@@ -1,1 +1,1 @@
-module.exports = require('./lib/disease')
+module.exports = { disease : require('./lib/disease'), gene: require('./lib/gene') }
